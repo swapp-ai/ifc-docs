@@ -1,7 +1,7 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('ViewDefinition [CoordinationView]'),'2;1');
-FILE_NAME('','2024-12-16T10:43:07',$,$,'IfcOpenShell 0.8.0','IfcOpenShell 0.8.0','');
+FILE_NAME('','2025-01-01T00:00:00',(),(),'IfcOpenShell 0.8.0','IfcOpenShell 0.8.0','');
 FILE_SCHEMA(('IFC4'));
 ENDSEC;
 DATA;
@@ -9,7 +9,7 @@ DATA;
 #2=IFCAPPLICATION(#1,'0.1.0','IFC Documentation Examples','IFC Documentation Example');
 #3=IFCPERSON($,$,'Example',$,$,$,$,$);
 #4=IFCPERSONANDORGANIZATION(#3,#1,$);
-#5=IFCOWNERHISTORY(#4,#2,$,$,$,$,$,1734338587);
+#5=IFCOWNERHISTORY(#4,#2,$,$,$,$,$,1735682400);
 #6=IFCSIUNIT(*,.LENGTHUNIT.,$,.METRE.);
 #7=IFCSIUNIT(*,.AREAUNIT.,$,.SQUARE_METRE.);
 #8=IFCSIUNIT(*,.VOLUMEUNIT.,$,.CUBIC_METRE.);

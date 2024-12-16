@@ -3,7 +3,6 @@ generate an ifc file with base structure only --
 no geometries.
 """
 
-
 import logging
 import math
 import pathlib
@@ -69,7 +68,7 @@ def add_owner(ifc_file: ifcopenshell.file) -> ifcopenshell.entity_instance:
     owner_hist = ifc_file.createIfcOwnerHistory()
     owner_hist.OwningUser = author_and_org
     owner_hist.OwningApplication = app
-    owner_hist.CreationDate = int(time.time())
+    owner_hist.CreationDate = int(time.mktime((2025, 1, 1, 0, 0, 0, 0, 0, 0)))
 
     return owner_hist
 
@@ -160,14 +159,14 @@ def add_project(ifc_file: ifcopenshell.file,
     return project
 
 
-
-
 def example1() -> ifcopenshell.file:
     # set logging to debug
     logging.root.setLevel(logging.DEBUG)
 
     # initialize ifc file:
     ifc_file = ifcopenshell.file(schema='IFC4')
+    ifc_file.header.file_name.time_stamp = "2025-01-01T00:00:00"
+
     owner_hist = add_owner(ifc_file)
     unit_assignment = add_units(ifc_file)
     geom_context = add_default_geometry_context(ifc_file)
