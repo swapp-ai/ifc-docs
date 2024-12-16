@@ -27,16 +27,16 @@ may refine or expand upon the concepts introduced.
 
 ## General Principles
 
-**Key Idea:** Represent documentation objects as structured IFC elements using a combination of `IfcGroup`,
-`IfcAnnotation`, and existing IFC relationships (`IfcRelAggregates`, `IfcRelAssignsToProduct`, etc.). The resulting
-hierarchy allows for a rich representation of sheets, views, annotations, dimension lines, and references, all embedded
-within a standard IFC dataset.
+**Key Idea:** Represent documentation objects as structured IFC elements using `IfcAnnotation`, and existing IFC
+relationships (`IfcRelAggregates`, `IfcRelAssignsToProduct`, etc.). The resulting hierarchy allows for a rich
+representation of sheets, views, annotations, dimension lines, and references, all embedded within a standard IFC
+dataset.
 
 **Hierarchy Overview:**
 
 ```
 IfcProject
-   └── DocumentSet (represented as IfcGroup, 1..*)
+   └── DocumentSet (represented as IfcAnnotation, 1..*)
        └── Sheet (IfcAnnotation, 1..*)
            └── ViewPort (IfcAnnotation, 1..*)
                └── View (IfcAnnotation, 1..1)
@@ -48,8 +48,8 @@ IfcProject
 **Key Points:**
 
 - Hierarchical relationships are represented using `IfcRelAggregates`.
-- The top-level `DocumentSet` is an `IfcGroup`. All subordinate items (Sheet, ViewPort, View, Annotation elements) are
-  represented as `IfcAnnotation` entities.
+- The top-level `DocumentSet` is a top-level `IfcAnnotation`. 
+- All subordinate items (Sheet, ViewPort, View, Annotation elements) are represented as `IfcAnnotation` entities.
 - Geometries follow IFC conventions. Each annotation’s geometry is defined in a suitable coordinate system, with
   transforms (`IfcLocalPlacement` and `IfcAxis2Placement3D`) capturing translation, rotation, and possibly uniform
   scaling relative to its parent.
@@ -59,14 +59,14 @@ IfcProject
 
 ## Proposed Hierarchy and Entities
 
-### DocumentSet (`IfcGroup`)
+### DocumentSet (`IfcAnnotation`)
 
-- **Definition:** An `IfcGroup` with `.Name = "DocumentSet"` that aggregates multiple `Sheet` entities.
+- **Definition:** An `IfcAnnotation` with `.Name = "DocumentSet"` that aggregates multiple `Sheet` entities.
 
-- **Purpose:** Serves as a container for all sheets in the project. There may be multiple `DocumentSet` groups if
+- **Purpose:** Serves as a container for all sheets in the project. There may be multiple `DocumentSet` sets if
   needed.
 - **Placement in IFC:** The `DocumentSet` can coexist alongside standard site/building/facility structures. Use
-  `IfcRelAssignsToGroup` to assign sheets to the document set.
+  `IfcRelAggregates` to assign sheets to the document set.
 
 ### Sheet (`IfcAnnotation`)
 
@@ -226,7 +226,8 @@ properties and their `type` (and `subtype` where applicable):
 
 ## Examples
 
-Refer to the [examples/](https://github.com/swapp-ai/ifc-docs/tree/main/examples) folder for scripts illustrating how to produce IFC files consistent with these principles.
+Refer to the [examples/](https://github.com/swapp-ai/ifc-docs/tree/main/examples) folder for scripts illustrating how to
+produce IFC files consistent with these principles.
 
 ## Styling
 
