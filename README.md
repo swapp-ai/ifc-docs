@@ -226,7 +226,7 @@ properties and their `type` (and `subtype` where applicable):
 
 ## Examples
 
-Refer to the `examples` folder for scripts illustrating how to produce IFC files consistent with these principles.
+Refer to the [examples/](https://github.com/swapp-ai/ifc-docs/tree/main/examples) folder for scripts illustrating how to produce IFC files consistent with these principles.
 
 ## Styling
 
