@@ -7,20 +7,41 @@ no geometries.
 import logging
 import math
 import pathlib
+import random
 import time
 import uuid
+from dataclasses import dataclass
 
 import ifcopenshell
 import ifcopenshell.guid
 import ifcopenshell.validate
 
 
-def new_host_guid() -> str:
-    return ifcopenshell.guid.compress(uuid.uuid1().hex)
+@dataclass
+class GuidGenerator:
+    seed: int = 42
+
+    def __post_init__(self) -> None:
+        self._random_device = random.Random()
+        self._random_device.seed(self.seed)
+
+    def _next_consistent_uuid_seed(self) -> int:
+        return self._random_device.getrandbits(128)
+
+    def new_random_uuid1_guid(self) -> str:
+        return ifcopenshell.guid.compress(uuid.uuid1().hex)
+
+    def new_consistent_uuid1_guid(self) -> str:
+        return ifcopenshell.guid.compress(uuid.UUID(int=self._next_consistent_uuid_seed(), version=1).hex)
+
+    def new_random_uuid4_guid(self) -> str:
+        return ifcopenshell.guid.compress(uuid.uuid4().hex)
+
+    def new_consistent_uuid4_guid(self) -> str:
+        return ifcopenshell.guid.compress(uuid.UUID(int=self._next_consistent_uuid_seed(), version=4).hex)
 
 
-def new_random_guid() -> str:
-    return ifcopenshell.guid.compress(uuid.uuid4().hex)
+new_host_guid = GuidGenerator().new_consistent_uuid1_guid
 
 
 def add_owner(ifc_file: ifcopenshell.file) -> ifcopenshell.entity_instance:
