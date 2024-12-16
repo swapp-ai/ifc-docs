@@ -157,7 +157,7 @@ def example1() -> ifcopenshell.file:
     site.GlobalId = new_host_guid()
 
     # document set
-    docset = ifc_file.createIfcGroup()
+    docset = ifc_file.createIfcSite()
     docset.GlobalId = new_host_guid()
     docset.Name = 'DocumentSet'
 
@@ -169,7 +169,7 @@ def example1() -> ifcopenshell.file:
         RelatedObjects=[site, docset]
     )
 
-    # sheet1 > viewport1 > view1
+    # sheet1 |> viewport1 |> view1
     sheet1 = ifc_file.createIfcAnnotation()
     sheet1.GlobalId = new_host_guid()
     sheet1.Name = 'Sheet'
@@ -196,18 +196,29 @@ def example1() -> ifcopenshell.file:
         RelatedObjects=[view1]
     )
 
-    # sheet2 > viewport2 > view2[a,b]
+    # sheet2 |> viewport2 |> view2[a,b]
     sheet2 = ifc_file.createIfcAnnotation()
     sheet2.GlobalId = new_host_guid()
     sheet2.Name = 'Sheet'
 
-    viewport2 = ifc_file.createIfcAnnotation()
-    viewport2.GlobalId = new_host_guid()
-    viewport2.Name = 'ViewPort'
+    viewport2a = ifc_file.createIfcAnnotation()
+    viewport2a.GlobalId = new_host_guid()
+    viewport2a.Name = 'ViewPort'
 
     view2a = ifc_file.createIfcAnnotation()
     view2a.GlobalId = new_host_guid()
     view2a.Name = 'View'
+
+    ifc_file.create_entity(
+        'IfcRelAggregates',
+        GlobalId=new_host_guid(),
+        RelatingObject=viewport2a,
+        RelatedObjects=[view2a]
+    )
+
+    viewport2b = ifc_file.createIfcAnnotation()
+    viewport2b.GlobalId = new_host_guid()
+    viewport2b.Name = 'ViewPort'
 
     view2b = ifc_file.createIfcAnnotation()
     view2b.GlobalId = new_host_guid()
@@ -216,34 +227,37 @@ def example1() -> ifcopenshell.file:
     ifc_file.create_entity(
         'IfcRelAggregates',
         GlobalId=new_host_guid(),
-        RelatingObject=viewport2,
-        RelatedObjects=[view2a, view2b]
+        RelatingObject=viewport2b,
+        RelatedObjects=[view2b]
     )
 
     ifc_file.create_entity(
         'IfcRelAggregates',
         GlobalId=new_host_guid(),
         RelatingObject=sheet2,
-        RelatedObjects=[viewport2]
+        RelatedObjects=[viewport2a, viewport2b]
     )
 
     ifc_file.create_entity(
-        'IfcRelAssignsToGroup',
+        'IfcRelAggregates',
         GlobalId=new_host_guid(),
-        RelatingGroup=docset,
+        RelatingObject=docset,
         RelatedObjects=[sheet1, sheet2]
     )
 
     return ifc_file
 
 
+def _main():
+    ifc_file = example1()
+    ifc_file = ifcopenshell.file.from_string(ifc_file.to_string())
+    ifcopenshell.validate.validate(
+        ifc_file,
+        logger=logging.root,
+        express_rules=True
+    )
+    ifc_file.write('example1.ifc')
 
 
-ifc_file = example1()
-ifc_file = ifcopenshell.file.from_string(ifc_file.to_string())
-ifcopenshell.validate.validate(
-    ifc_file,
-    logger=logging.root,
-    express_rules=True
-)
-ifc_file.write('example1.ifc')
+if __name__ == '__main__':
+    _main()
