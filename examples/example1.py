@@ -157,7 +157,7 @@ def example1() -> ifcopenshell.file:
     site.GlobalId = new_host_guid()
 
     # document set
-    docset = ifc_file.createIfcSite()
+    docset = ifc_file.createIfcAnnotation()
     docset.GlobalId = new_host_guid()
     docset.Name = 'DocumentSet'
 
