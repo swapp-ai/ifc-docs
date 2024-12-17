@@ -159,13 +159,65 @@ def add_project(ifc_file: ifcopenshell.file,
     return project
 
 
+def add_properties(ifc_file, element, properties_dict, property_set_name="DocumentationObjectProperties"):
+    """
+    Adds a property set with multiple key-value pairs to the given IFC element.
+
+    Args:
+        ifc_file: The IFC file object.
+        element: The IFC element to which the property set will be attached.
+        properties_dict: A dictionary containing key-value pairs.
+        property_set_name: The name of the property set.
+    """
+    property_list = []
+
+    for key, value in properties_dict.items():
+        # Determine the appropriate IfcValue subtype
+        if isinstance(value, str):
+            value_instance = ifc_file.create_entity("IfcText", value)
+        elif isinstance(value, int):
+            value_instance = ifc_file.create_entity("IfcInteger", value)
+        elif isinstance(value, float):
+            value_instance = ifc_file.create_entity("IfcReal", value)
+        else:
+            raise ValueError(f"Unsupported value type: {type(value)}")
+
+        # Create an IfcPropertySingleValue for each key-value pair
+        property_single_value = ifc_file.createIfcPropertySingleValue(
+            Name=key,
+            Description=None,
+            NominalValue=value_instance,
+            Unit=None,
+        )
+        property_list.append(property_single_value)
+
+    # Create the property set with all properties
+    property_set = ifc_file.createIfcPropertySet(
+        GlobalId=ifcopenshell.guid.new(),
+        OwnerHistory=None,
+        Name=property_set_name,
+        Description=None,
+        HasProperties=property_list,
+    )
+
+    # Create the relationship between the element and the property set
+    ifc_file.createIfcRelDefinesByProperties(
+        GlobalId=ifcopenshell.guid.new(),
+        OwnerHistory=None,
+        Name=None,
+        Description=None,
+        RelatedObjects=[element],
+        RelatingPropertyDefinition=property_set,
+    )
+
+
 def example1() -> ifcopenshell.file:
     # set logging to debug
     logging.root.setLevel(logging.DEBUG)
 
     # initialize ifc file:
     ifc_file = ifcopenshell.file(schema='IFC4')
-    ifc_file.header.file_name.time_stamp = "2025-01-01T00:00:00"
+    ifc_file.header.file_name.time_stamp = "20250101T000000"
 
     owner_hist = add_owner(ifc_file)
     unit_assignment = add_units(ifc_file)
@@ -179,7 +231,8 @@ def example1() -> ifcopenshell.file:
     # document set
     docset = ifc_file.createIfcAnnotation()
     docset.GlobalId = new_host_guid()
-    docset.Name = 'DocumentSet'
+    docset.Name = 'My Document Set'
+    add_properties(ifc_file, docset, {"type": "DocumentSet"})
 
     # connect "roots" of project
     ifc_file.create_entity(
@@ -192,11 +245,13 @@ def example1() -> ifcopenshell.file:
     # sheet1 |> viewport1 |> view1
     sheet1 = ifc_file.createIfcAnnotation()
     sheet1.GlobalId = new_host_guid()
-    sheet1.Name = 'Sheet'
+    sheet1.Name = 'Sample Sheet 1'
+    add_properties(ifc_file, sheet1, {"type": "Sheet"})
 
     viewport1 = ifc_file.createIfcAnnotation()
     viewport1.GlobalId = new_host_guid()
-    viewport1.Name = 'ViewPort'
+    viewport1.Name = 'ViewPort 1'
+    add_properties(ifc_file, viewport1, {"type": "ViewPort"})
 
     ifc_file.create_entity(
         'IfcRelAggregates',
@@ -207,7 +262,8 @@ def example1() -> ifcopenshell.file:
 
     view1 = ifc_file.createIfcAnnotation()
     view1.GlobalId = new_host_guid()
-    view1.Name = 'View'
+    view1.Name = 'View 1'
+    add_properties(ifc_file, view1, {"type": "View"})
 
     ifc_file.create_entity(
         'IfcRelAggregates',
@@ -219,15 +275,17 @@ def example1() -> ifcopenshell.file:
     # sheet2 |> viewport2 |> view2[a,b]
     sheet2 = ifc_file.createIfcAnnotation()
     sheet2.GlobalId = new_host_guid()
-    sheet2.Name = 'Sheet'
+    sheet2.Name = 'Sample Sheet 2'
+    add_properties(ifc_file, sheet2, {"type": "Sheet"})
 
     viewport2a = ifc_file.createIfcAnnotation()
     viewport2a.GlobalId = new_host_guid()
-    viewport2a.Name = 'ViewPort'
-
+    viewport2a.Name = 'ViewPort A'
+    add_properties(ifc_file, viewport2a, {"type": "ViewPort"})
     view2a = ifc_file.createIfcAnnotation()
     view2a.GlobalId = new_host_guid()
-    view2a.Name = 'View'
+    view2a.Name = 'View 2a'
+    add_properties(ifc_file, view2a, {"type": "View"})
 
     ifc_file.create_entity(
         'IfcRelAggregates',
@@ -238,11 +296,13 @@ def example1() -> ifcopenshell.file:
 
     viewport2b = ifc_file.createIfcAnnotation()
     viewport2b.GlobalId = new_host_guid()
-    viewport2b.Name = 'ViewPort'
+    viewport2b.Name = 'ViewPort B'
+    add_properties(ifc_file, viewport2b, {"type": "ViewPort"})
 
     view2b = ifc_file.createIfcAnnotation()
     view2b.GlobalId = new_host_guid()
-    view2b.Name = 'View'
+    view2b.Name = 'View 2b'
+    add_properties(ifc_file, view2b, {"type": "View"})
 
     ifc_file.create_entity(
         'IfcRelAggregates',
