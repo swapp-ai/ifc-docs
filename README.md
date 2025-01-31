@@ -2,22 +2,22 @@
 
 ## IFC Schema Proposal
 
-### [SWAPP.AI](https://swapp.ai), December 2024
+### [SWAPP.AI](swapp.ai), December 2024
 
 ## Introduction
 
 This document proposes a new convention for representing architectural 2D documentation within an IFC 4.3 model,
 leveraging existing IFC classes and relationships without introducing new entity definitions. The approach is intended
-to be both orthogonal and complementary to the existing IFC model, ensuring that new documentation objects can coexist
+to be both orthogonal *and* complementary to the existing IFC model, ensuring that new documentation objects can coexist
 seamlessly with native BIM elements.
 
 The primary goal is to achieve _semantic_ enrichment of 2D drawing and annotation elements, enabling drawing automation
 and interoperability. Rather than merely exporting visual artifacts such as PDFs or SVGs, this proposal aims to
 incorporate machine-readable documentation into the IFC model, allowing downstream tools to interpret, modify, or
-regenerate the 2D documentation as needed.
+regenerate the 2D documentation as needed. Such modifications and enhancements may then be naturally and seamlessly re-imported back into the BIM tool directly and losslessly.
 
 The proposal draws inspiration from BIM tools (e.g., Revit) and open-source IFC workflows (e.g., BlenderBIM and Bonsai
-projects), and is informed by SWAPP.AI’s practical experience with BIM interoperability.
+projects), and is informed by [SWAPP.AI](swapp.ai)’s practical experience with BIM interoperability.
 
 ### Caveats
 
@@ -56,6 +56,16 @@ IfcProject
 - Scaling between world coordinates and sheet (paper) units is explicitly modeled at the `View` level.
 - Elements may carry custom `IfcPropertySet` attributes for interoperability, metadata, and reference links to original
   BIM elements.
+
+### Related IFC Features
+
+#### Styling
+
+IFC supports element geometry styling, including colors, hatching, line styles, widths, and fonts. Visualization support for these styles varies widely among IFC viewers. This proposal assumes that styling definitions, when desired, can be added to any IFC (2D or 3D) element within the existing IFC specification, making it orthogonal to this proposal. This proposal focuses on drawing automation and manipulation, rather than exact reproduction of outputs such as PDFs.
+
+#### Property Sets
+
+All IFC elements can have custom properties and attributes. BIM vendors exporting 2D IFC documentation (and other IFC elements) can store additional metadata (e.g., application-specific identifiers) in these custom property sets to enable re-importing the file back into their proprietary software.
 
 ## Proposed Hierarchy and Entities
 
@@ -221,6 +231,19 @@ properties and their `type` (and `subtype` where applicable):
 |                        |           |                                                                                                                   |
 | Other Annotation       | `type`    | `"Annotation"`                                                                                                    |
 |                        | `subtype` | `"text_note"`, `"matchline"` ...                                                                                  |
+# FAQ
+
+### Q1: What's wrong with...
+- **PDF** is a portable print ready format. It is not meant to be edited, processed nor manipulated. It is a format meant as a final deliverable. Document elements are stored as disjoint elements with very little intent or support for metadata.
+- **SVG** is a widely supported 2D vector format, meant primarily for visualization and 2D geometry presentations. It has rich support for presentation styling (via CSS). Although it is XML-based, and as such, may carry arbirary information, it is not generally meant to be used to carry such metadata.  
+The elements of the file are geometric elements and not abstract but sematically meaningful components with geometric representations.
+- **DWG** is a proprietary binary format not designed for openness and interoperability. It is often used as a final 2D layer between some proprietary software platforms but not generally meant to support back-and-forth interchange between full-fledged BIM systems.
+
+### Q2: Most viewers will not show these 2D documents!
+Untrue. 
+
+Indeed, rich IFC styling support varies widely between different IFC viewers. In particular, advanced styling specifications like fonts, hatching, colors and line styles are often only partially supported.  
+However, most of the viewers we tested show the 2D geometries as expected. See sample screenshots [coming soon].
 
 # Additional Notes
 
